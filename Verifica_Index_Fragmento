@@ -1,0 +1,11 @@
+SELECT
+    OBJECT_NAME(Stat.object_id)
+    ,I.name
+    ,Stat.index_type_desc
+    ,Stat.avg_fragmentation_in_percent
+FROM sys.dm_db_index_physical_stats(DB_ID('SSISDB'),NULL,NULL,NULL,NULL) AS Stat
+JOIN sys.indexes AS I
+        ON Stat.index_id = I.index_id
+        AND Stat.object_id = I.object_id
+WHERE
+    Stat.avg_fragmentation_in_percent > 30
