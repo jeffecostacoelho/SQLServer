@@ -1,0 +1,33 @@
+--Declarando variáveis e Definindo cursor
+DECLARE @dbName varchar(30), @Status int
+DECLARE cursor_DBOnlineOffline CURSOR FOR
+
+--Selecionando os databases que serão processados
+
+SELECT name, status FROM master..SYSDATABASES
+WHERE name NOT IN ('master', 'msdb', 'model', 'tempdb')
+ORDER BY 2 DESC
+
+--Atribuindo o resultado do select acima no cursor que foi definido
+
+OPEN cursor_DBOnlineOffline
+FETCH NEXT FROM cursor_DBOnlineOffline
+INTO @dbName, @Status
+
+--Iniciando o while do cursor
+
+WHILE @@FETCH_STATUS = 0
+
+BEGIN
+         --Verifica se está Online ou Offline
+		 IF @Status = 66048
+			Print 'Database OFFLINE --> ' + @dbName
+         ELSE
+			Print 'Database ONLINE --> ' + @dbName
+         --Posiciona no próximo registro do cursor
+         FETCH NEXT FROM cursor_DBOnlineOffline
+         INTO @dbName, @Status
+END
+--Término do while e encerrando o cursor
+CLOSE cursor_DBOnlineOffline
+DEALLOCATE cursor_DBOnlineOffline 
