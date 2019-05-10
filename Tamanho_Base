@@ -1,0 +1,12 @@
+with fs
+as
+(
+    --select database_id, type, CAST(size/128.0 AS DECIMAL(10,2)) size
+	select database_id, type, cast(size * 8.0 / 1024 / 1024 as decimal(10,2)) size
+    from sys.master_files
+)
+select
+    name as NomeDoBanco,
+    (select sum(size) from fs where type = 0 and fs.database_id = db.database_id) DataFileSizeGB,
+    (select sum(size) from fs where type = 1 and fs.database_id = db.database_id) LogFileSizeGB
+from sys.databases db
