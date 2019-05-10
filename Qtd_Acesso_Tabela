@@ -1,0 +1,11 @@
+SELECT
+     DB_NAME(ius.database_id) AS BancoDeDados,
+     t.NAME AS Tabela,
+     SUM(ius.user_seeks + ius.user_scans + ius.user_lookups) AS QuantidadeDeAcessos
+FROM sys.dm_db_index_usage_stats ius
+INNER JOIN sys.tables t
+     ON t.OBJECT_ID = ius.object_id
+WHERE database_id = DB_ID('?') <- ONDE O INTERROGAÇÃO É O NOME DO BANCO QUE SERÁ PESQUISADO
+GROUP BY database_id,
+         t.name
+ORDER BY SUM(ius.user_seeks + ius.user_scans + ius.user_lookups) DESC 
